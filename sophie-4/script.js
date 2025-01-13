@@ -1,7 +1,7 @@
 // meltdown.js
 //////////////////////////////////////////////////////////////
 // Full JavaScript code for "cover" approach in resizeImages
-// Step-based (snap) wheel scrolling AND a more intense displacement
+// Step-based (snap) wheel and touch scrolling AND a more intense displacement
 //////////////////////////////////////////////////////////////
 
 class MeltingPics {
@@ -98,7 +98,6 @@ class MeltingPics {
     }
   }
 
-
   resizeImages() {
     console.log("Resize images with 'cover' approach");
     for (let i = 0; i < this.images.length; i++) {
@@ -115,8 +114,6 @@ class MeltingPics {
         image.width = this.WIDTH;
         image.height = this.WIDTH / imageAspect;
       } else {
-       
-    
         image.height = this.HEIGHT;
         image.width = this.HEIGHT * imageAspect;
       }
@@ -128,13 +125,6 @@ class MeltingPics {
     }
   }
 
-
-
-
-
-
-
-  
   //////////////////////////////////////////
   // Position each image container vertically
   //////////////////////////////////////////
@@ -201,47 +191,23 @@ queue.loadFile({
 });
 
 // 2) Load your local images
-queue.loadFile({
-  src: 'images/image-5.jpg',
-  id: 'localImage1',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
+const localImages = [
+  'images/image-5.jpg',
+  'images/ieri.png',
+  'images/mala-p.png',
+  'images/bio-film2.png',
+  'images/future-st.png',
+  'images/sens.png',
+  'images/p-cultures2.png'
+];
 
-queue.loadFile({
-  src: 'images/ieri.png',
-  id: 'localImage2',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
-
-queue.loadFile({
-  src: 'images/mala-p.png',
-  id: 'localImage3',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
-
-queue.loadFile({
-  src: 'images/bio-film2.png',
-  id: 'localImage4',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
-
-queue.loadFile({
-  src: 'images/future-st.png',
-  id: 'localImage5',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
-
-queue.loadFile({
-  src: 'images/sens.png',
-  id: 'localImage6',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
-
-queue.loadFile({
-  src: 'images/p-cultures2.png',
-  id: 'localImage7',
-  type: createjs.AbstractLoader.IMAGE
-}, false);
+localImages.forEach((src, index) => {
+  queue.loadFile({
+    src: src,
+    id: `localImage${index + 1}`,
+    type: createjs.AbstractLoader.IMAGE
+  }, false);
+});
 
 // 3) Listen to 'fileload'
 queue.on('fileload', (evt) => {
@@ -375,6 +341,50 @@ queue.on('complete', () => {
     }
   }, { passive: false });
 
+  // --------------------------------------------------------
+  //  TOUCH EVENT LISTENERS FOR MOBILE SCROLLING
+  // --------------------------------------------------------
+  let touchStartY = 0;
+  let touchEndY = 0;
+  const touchThreshold = 50; // Minimum swipe distance to trigger a scroll
+
+  function handleTouchStart(evt) {
+    if (isTweening) return;
+    touchStartY = evt.touches[0].clientY;
+  }
+
+  function handleTouchMove(evt) {
+    // Prevent default scrolling to ensure our custom scroll works
+    evt.preventDefault();
+  }
+
+  function handleTouchEnd(evt) {
+    if (isTweening) return;
+    touchEndY = evt.changedTouches[0].clientY;
+    let swipeDistance = touchStartY - touchEndY;
+
+    if (swipeDistance > touchThreshold) {
+      // Swipe up - go to next index
+      if (currentIndex < images.length - 1) {
+        currentIndex++;
+        scrollToIndex(currentIndex);
+      }
+    } else if (swipeDistance < -touchThreshold) {
+      // Swipe down - go to previous index
+      if (currentIndex > 0) {
+        currentIndex--;
+        scrollToIndex(currentIndex);
+      }
+    }
+  }
+
+  // Add touch event listeners to the document or a specific container
+  document.addEventListener('touchstart', handleTouchStart, { passive: false });
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', handleTouchEnd, { passive: false });
+  // --------------------------------------------------------
+  //  END TOUCH EVENT LISTENERS
+  // --------------------------------------------------------
 });
 
 // 5) Load items
