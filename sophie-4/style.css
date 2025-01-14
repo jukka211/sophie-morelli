@@ -1,3 +1,23 @@
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('PPEditorialNew-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+.impressum {
+  z-index: 9999;
+  position: fixed;
+  bottom:8px;
+  right:20px;
+  mix-blend-mode: difference;
+  color: #ffffff;
+
+}
+
+.impressum a {
+  text-decoration: underline;
+  color: #ffffff;
+}
 
 #fakescroll {
   position: absolute;
@@ -47,7 +67,7 @@ canvas {
 
 .pagination {
   position: fixed;
-  top: 0;
+  top:0px;
   left: 50%;
   transform: translate(-50%, 0%);
   display: flex;
@@ -55,30 +75,42 @@ canvas {
   gap: 0px; /* Adjust as needed */
   z-index: 999;
   background-color: transparent;
+  mix-blend-mode: difference;
+
   
 }
 
 
 .pagination-item {
-  
-  font-size: 14px;
-  color: #000000;
-  background-color: #ffffff;
+
+  color: #ffffff;
+  background-color: #00000000;
   cursor: pointer;
-  padding: 2px 8px 2px 8px;
-  border: 1px solid black;
+  padding: 6px 12px 4px 12px;
+  border: 0;
+border-left: 0.7px solid rgb(255, 255, 255);
+border-right: 0.7px solid rgb(255, 255, 255);
+border-bottom: 0.7px solid rgb(255, 255, 255);
+
+
+
+  mix-blend-mode: difference;
 
 }
 
 .pagination-item.active {
-  color: #ffffff;
-  background-color: #000000;
-  border: 1px solid black;
+  color: #000000;
+  background-color: #ffffff;
+
+  border-bottom: 1.4px solid rgb(255, 255, 255);
+ 
+
+
 }
 
 .pagination-item:hover {
   color: #000000;
-  background-color: transparent;
+  background-color: white;
 }
 
 /* Reset and box-sizing for cleaner layout */
@@ -89,13 +121,12 @@ canvas {
 }
 
 body {
-  font-family:'Franklin Gothic Medium';
+  font-family:'PPEditorialNew';
+  font-size: 14px;
+  letter-spacing: 0.2px;
 }
 
 /* Container that holds navigation */
-.about {
-  text-decoration: underline;
-}
 
 
 
@@ -106,7 +137,7 @@ body {
   color: #ffffff;
   mix-blend-mode: exclusion;
  
-  font-size: 14px;
+
   z-index: 99999;
  
 }
@@ -126,15 +157,31 @@ body {
   right:20px;
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 0px;
   z-index: 9999;
-  padding-top: 4px;
+  padding-top: 6px;
+  
 }
 .nav-right a:hover {
-  color:#ffffff;
+  color:#000000;
+  background-color: #ffffff;
   mix-blend-mode: normal;
   text-decoration: underline;
+  
 }
+.nav-right a {
+color: #ffffff;
+  background-color: #00000000;
+  cursor: pointer;
+  padding: 6px 12px 4px 12px;
+  border: 0;
+border-left: 0.7px solid rgb(255, 255, 255);
+border-right: 0.7px solid rgb(255, 255, 255);
+border-bottom: 0.7px solid rgb(255, 255, 255);
+}
+
+
+
 
 /* Add this to your CSS */
 body {
@@ -157,7 +204,7 @@ body {
     padding-bottom: 0;
   }
   .pagination-item {
-  
+    padding: 6px 8px 4px 6px;
     font-size: 12px;
   text-align: center;}
 
