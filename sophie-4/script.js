@@ -1,15 +1,15 @@
 // meltdown.js
 //////////////////////////////////////////////////////////////
 // Full JavaScript code for "cover" approach in resizeImages
-// Step-based (snap) wheel and touch scrolling AND a more intense displacement
+// Step-based (snap) wheel and touch scrolling with Hammer.js
 //////////////////////////////////////////////////////////////
 
 class MeltingPics {
   constructor(canvas, images, displacement) {
     this.canvas = canvas;
-    this.imagesList = images;         // Array of loaded <img> from CreateJS
+    this.imagesList = images; // Array of loaded <img> from CreateJS
     this.displacementImage = displacement; // Displacement <img>
-    
+
     // Bind methods
     this.resizeCanvas = this.resizeCanvas.bind(this);
     window.addEventListener('resize', this.resizeCanvas);
@@ -20,7 +20,7 @@ class MeltingPics {
     this.resizeCanvas();
     // Add images to Pixi
     this.createImages();
-    // Resize to "contain" each image fully
+    // Resize to "cover" each image fully
     this.resizeImages();
     // Reposition them in a vertical stack
     this.repositeContainers();
@@ -29,11 +29,10 @@ class MeltingPics {
     this.app.render();
 
     // Fade in the canvas, then start rendering
-    TweenMax.fromTo(
+    gsap.fromTo(
       this.canvas,
-      1,
       { opacity: 0 },
-      { opacity: 1, delay: 0.6, onComplete: this.app.start, onCompleteScope: this.app }
+      { opacity: 1, duration: 1, delay: 0.6, onComplete: () => { this.app.start(); } }
     );
 
     // Set up displacement filter
@@ -42,7 +41,7 @@ class MeltingPics {
     this.dispFilter = new PIXI.filters.DisplacementFilter(this.dispSprite);
     this.dispFilter.autoFit = true;
     this.dispFilter.scale.set(0);
-    
+
     // Enable "repeat" mode so it can tile if scaled
     this.dispSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 
@@ -102,13 +101,13 @@ class MeltingPics {
     console.log("Resize images with 'cover' approach");
     for (let i = 0; i < this.images.length; i++) {
       let image = this.images[i].children[0];
-  
+
       let iniW = image.iniWidth;
       let iniH = image.iniHeight;
-      
+
       let imageAspect = iniW / iniH;
       let screenAspect = this.ASPECT;
-  
+
       // "Cover" approach
       if (imageAspect < screenAspect) {
         image.width = this.WIDTH;
@@ -117,7 +116,7 @@ class MeltingPics {
         image.height = this.HEIGHT;
         image.width = this.HEIGHT * imageAspect;
       }
-  
+
       // Center the image
       image.position.x = (this.WIDTH - image.width) / 2;
       // NOTE: dividing by 500 here is in your original code
@@ -233,7 +232,7 @@ queue.on('complete', () => {
   const scrollDownElem = document.getElementById('scrolldown');
   if (scrollDownElem) {
     scrollDownElem.style.display = "block";
-    TweenMax.from(scrollDownElem, 1, { opacity: 0 });
+    gsap.from(scrollDownElem, { opacity: 0, duration: 1 });
   }
 
   // Disable normal scrolling
@@ -243,12 +242,14 @@ queue.on('complete', () => {
   let isTweening = false;
 
   function scrollToIndex(index) {
+    console.log(`scrollToIndex called with index: ${index}`);
     isTweening = true;
     const targetScrollY = index * window.innerHeight;
 
-    TweenMax.to({}, 1, {
-      ease: Power2.easeOut,
-      onUpdate: function() {
+    gsap.to({}, {
+      duration: 1,
+      ease: "power2.out",
+      onUpdate: function () {
         const t = this.progress();
         const currentY = window.scrollY;
         const newY = currentY + (targetScrollY - currentY) * t;
@@ -257,7 +258,7 @@ queue.on('complete', () => {
         const factor = newY / (window.innerHeight * images.length - window.innerHeight);
         pics.updateDisplacementImmediate(factor);
       },
-      onComplete: function() {
+      onComplete: function () {
         isTweening = false;
         // Update pagination
         updatePaginationItems(index);
@@ -312,7 +313,7 @@ queue.on('complete', () => {
   //  WHEEL EVENT LISTENER WITH THRESHOLD
   // --------------------------------------------------------
   let scrollDelta = 0;
-  const threshold = 50; // Increase for *less* sensitivity (e.g., 80, 100, etc.)
+  const threshold = 50; // Adjust as needed
 
   window.addEventListener('wheel', evt => {
     evt.preventDefault();
@@ -342,48 +343,35 @@ queue.on('complete', () => {
   }, { passive: false });
 
   // --------------------------------------------------------
-  //  TOUCH EVENT LISTENERS FOR MOBILE SCROLLING
+  //  HAMMER.JS EVENT LISTENERS FOR MOBILE SCROLLING
   // --------------------------------------------------------
-  let touchStartY = 0;
-  let touchEndY = 0;
-  const touchThreshold = 50; // Minimum swipe distance to trigger a scroll
+  // Select the element you want Hammer.js to listen on
+  const hammerElement = document.body; // You can choose a more specific element if needed
 
-  function handleTouchStart(evt) {
-    if (isTweening) return;
-    touchStartY = evt.touches[0].clientY;
-  }
+  // Initialize Hammer.js on the selected element
+  const hammer = new Hammer(hammerElement);
+  console.log('Hammer.js initialized:', hammer !== undefined);
 
-  function handleTouchMove(evt) {
-    // Prevent default scrolling to ensure our custom scroll works
-    evt.preventDefault();
-  }
+  // Configure Hammer.js to recognize vertical swipe gestures
+  hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
 
-  function handleTouchEnd(evt) {
-    if (isTweening) return;
-    touchEndY = evt.changedTouches[0].clientY;
-    let swipeDistance = touchStartY - touchEndY;
+  // Swipe Up Handler - Navigate to Next Image
+  hammer.on('swipeup', () => {
+    console.log('Swipe Up detected');
+    if (isTweening || currentIndex >= images.length - 1) return;
+    currentIndex++;
+    scrollToIndex(currentIndex);
+  });
 
-    if (swipeDistance > touchThreshold) {
-      // Swipe up - go to next index
-      if (currentIndex < images.length - 1) {
-        currentIndex++;
-        scrollToIndex(currentIndex);
-      }
-    } else if (swipeDistance < -touchThreshold) {
-      // Swipe down - go to previous index
-      if (currentIndex > 0) {
-        currentIndex--;
-        scrollToIndex(currentIndex);
-      }
-    }
-  }
-
-  // Add touch event listeners to the document or a specific container
-  document.addEventListener('touchstart', handleTouchStart, { passive: false });
-  document.addEventListener('touchmove', handleTouchMove, { passive: false });
-  document.addEventListener('touchend', handleTouchEnd, { passive: false });
+  // Swipe Down Handler - Navigate to Previous Image
+  hammer.on('swipedown', () => {
+    console.log('Swipe Down detected');
+    if (isTweening || currentIndex <= 0) return;
+    currentIndex--;
+    scrollToIndex(currentIndex);
+  });
   // --------------------------------------------------------
-  //  END TOUCH EVENT LISTENERS
+  //  END HAMMER.JS EVENT LISTENERS
   // --------------------------------------------------------
 });
 

@@ -15,14 +15,26 @@ body {
   object-fit: contain;
   
 }
+.txt{
+  z-index: 99999;
+  font-size: 69px;
+  line-height: 68px;
+  letter-spacing: -0.5px;
+  position: fixed;
+  color:#ffffff;
+  mix-blend-mode: exclusion;
+  margin: 20px;
+
+ height: 100vh;
+}
 canvas {
   margin: 0; /* Remove default margin */
-  object-fit: contain;
+  object-fit:cover;
 
   position: fixed;
   top: 0px;
   left: 0px;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   background-color: #ffffff;
   z-index: 1;
@@ -81,7 +93,9 @@ body {
 }
 
 /* Container that holds navigation */
-
+.about {
+  text-decoration: underline;
+}
 
 
 
@@ -121,6 +135,12 @@ body {
   mix-blend-mode: normal;
   text-decoration: underline;
 }
+
+/* Add this to your CSS */
+body {
+  touch-action: none; /* Prevent default touch actions */
+}
+
 @media (max-width: 768px) { /* Adjust the breakpoint as needed */
   .pagination {
     position: fixed; /* Keeps the .pagination fixed at the bottom */
@@ -163,3 +183,7 @@ body {
   
 }
 }
+
+
+
+
