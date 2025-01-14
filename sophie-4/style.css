@@ -11,6 +11,7 @@
   right:20px;
   mix-blend-mode: difference;
   color: #ffffff;
+  font-size: 14px;
 
 }
 
@@ -163,8 +164,8 @@ body {
   
 }
 .nav-right a:hover {
-  color:#000000;
-  background-color: #ffffff;
+  color:#ffffff;
+
   mix-blend-mode: normal;
   text-decoration: underline;
   
@@ -173,11 +174,7 @@ body {
 color: #ffffff;
   background-color: #00000000;
   cursor: pointer;
-  padding: 6px 12px 4px 12px;
-  border: 0;
-border-left: 0.7px solid rgb(255, 255, 255);
-border-right: 0.7px solid rgb(255, 255, 255);
-border-bottom: 0.7px solid rgb(255, 255, 255);
+ 
 }
 
 
