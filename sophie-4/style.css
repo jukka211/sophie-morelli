@@ -226,6 +226,14 @@ body {
   right:10px;
   
 }
+
+  .impressum {
+  z-index: 9999;
+  position: fixed;
+  bottom:8px;
+  right:10px;
+  font-size:12px;
+}
 }
 
 
